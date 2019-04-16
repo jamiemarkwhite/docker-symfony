@@ -1,5 +1,5 @@
 # See https://github.com/docker-library/php/blob/master/7.1/fpm/Dockerfile
-FROM php:7.1-fpm
+FROM php:7.2-fpm
 ARG TIMEZONE
 
 MAINTAINER Maxence POUTORD <maxence.poutord@gmail.com>
@@ -18,10 +18,22 @@ RUN ln -snf /usr/share/zoneinfo/${TIMEZONE} /etc/localtime && echo ${TIMEZONE} >
 && printf '[PHP]\ndate.timezone = "%s"\n', ${TIMEZONE} > /usr/local/etc/php/conf.d/tzone.ini \
 && "date"
 
-# Type docker-php-ext-install to see available extensions
+
+RUN apt-get update -y
+
+RUN apt-get install -y sendmail libpng-dev
+
+RUN apt-get install -y libgmp-dev
+
+RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
+
 RUN docker-php-ext-install pdo pdo_mysql
 
 RUN docker-php-ext-install gd
+
+RUN docker-php-ext-install gmp
+
+RUN docker-php-ext-install bcmath
 
 
 # install xdebug
@@ -39,4 +51,4 @@ RUN pecl install xdebug \
 RUN echo 'alias sf="php app/console"' >> ~/.bashrc \
 && echo 'alias sf3="php bin/console"' >> ~/.bashrc
 
-WORKDIR /var/www/symfony
+WORKDIR /app
