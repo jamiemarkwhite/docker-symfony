@@ -17,8 +17,10 @@ services:
       args:
         TIMEZONE: ${TIMEZONE}
     volumes:
-      - ${SYMFONY_APP_PATH}:/app
-      - ./logs/symfony:/app/app/logs
+      - ${SYMFONY_APP_PATH}:/app:cached
+      - ${SYMFONY_APP_PATH}/bin:/app/bin
+      - ${SYMFONY_APP_PATH}/vendor:/app/vendor
+      - ./logs/symfony:/app/app/logs:cached
   nginx:
     build: nginx
     ports:
@@ -27,13 +29,13 @@ services:
       - php
     volumes:
       - ./logs/nginx/:/var/log/nginx
-  elk:
-    image: willdurand/elk
-    ports:
-      - 81:80
-    volumes:
-      - ./elk/logstash:/etc/logstash
-      - ./elk/logstash/patterns:/opt/logstash/patterns
-    volumes_from:
-      - php
-      - nginx
+  # elk:
+  #   image: willdurand/elk
+  #   ports:
+  #     - 81:80
+  #   volumes:
+  #     - ./elk/logstash:/etc/logstash
+  #     - ./elk/logstash/patterns:/opt/logstash/patterns
+  #   volumes_from:
+  #     - php
+  #     - nginx
